@@ -1,5 +1,5 @@
 [package]
-name = "clash-verge-logger"
+name = "clash_verge_logger"
 version = "0.1.0"
 edition = "2024"
 authors = ["Tunglies"]
