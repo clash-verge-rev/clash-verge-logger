@@ -41,16 +41,28 @@ pub fn console_format(
     let thread_name = current_thread.name().unwrap_or("unnamed");
 
     let level = level_filter_to_string(&record.level().to_level_filter());
+
+    let now = now.format("%H:%M:%S%.3f");
+    #[cfg(feature = "color")]
+    let now = Color::DarkGray.paint(Cow::from(now.to_string()));
+
     let line = record.line().map_or(0, |l| l);
     let module = record.module_path().unwrap_or("<unnamed>");
+    let module_line = Cow::from(format!("{}:{}", module, line));
+
+    #[cfg(feature = "color")]
+    let module_line = Color::Purple.paint(module_line);
+
+    let thread_name = Cow::from(format!("T{{{}}}", thread_name));
+    #[cfg(feature = "color")]
+    let thread_name = Color::Cyan.paint(thread_name);
 
     write!(
         w,
-        "[{}] {} [{}:{}] T[{}] {}",
-        now.format("%H:%M:%S%.3f"),
+        "{} {} {} {} {}",
+        now,
         level,
-        module,
-        line,
+        module_line,
         thread_name,
         record.args(),
     )
