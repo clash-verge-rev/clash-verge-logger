@@ -1,9 +1,12 @@
-use std::{io::Write, thread};
+use std::{io::Write, thread, usize};
 
+use arraydeque::{ArrayDeque, Wrapping};
+use compact_str::CompactString;
 use flexi_logger::DeferredNow;
 use log::{LevelFilter, Record};
 #[cfg(feature = "color")]
 use nu_ansi_term::Color;
+use tokio::sync::RwLock;
 
 use std::borrow::Cow;
 
@@ -93,4 +96,32 @@ pub fn file_format_without_level(
         now.format("%Y-%m-%d %H:%M:%S%.3f"),
         record.args(),
     )
+}
+
+const LOGS_QUEUE_LEN: usize = 100;
+
+pub struct AsyncLogger {
+    inner: RwLock<ArrayDeque<CompactString, LOGS_QUEUE_LEN, Wrapping>>,
+}
+
+impl AsyncLogger {
+    pub fn new() -> Self {
+        Self {
+            inner: RwLock::new(ArrayDeque::new()),
+        }
+    }
+    pub async fn append_log(&self, log: CompactString) {
+        let mut guard = self.inner.write().await;
+        guard.push_back(log);
+    }
+
+    pub async fn get_logs(&self) -> Vec<CompactString> {
+        let guard = self.inner.read().await;
+        guard.iter().cloned().collect()
+    }
+
+    pub async fn clear_logs(&self) {
+        let mut guard = self.inner.write().await;
+        guard.clear();
+    }
 }
