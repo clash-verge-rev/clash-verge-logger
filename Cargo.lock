@@ -76,7 +76,7 @@ dependencies = [
 
 [[package]]
 name = "clash_verge_logger"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "arraydeque",
  "compact_str",

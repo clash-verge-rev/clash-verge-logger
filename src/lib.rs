@@ -27,8 +27,8 @@ pub fn level_filter_to_string(log_level: &LevelFilter) -> Cow<'static, str> {
         match log_level {
             LevelFilter::Off => Cow::Borrowed("OFF"),
             LevelFilter::Error => Cow::Borrowed("ERROR"),
-            LevelFilter::Warn => Cow::Borrowed("WARN"),
-            LevelFilter::Info => Cow::Borrowed("INFO"),
+            LevelFilter::Warn => Cow::Borrowed("WARN "),
+            LevelFilter::Info => Cow::Borrowed("INFO "),
             LevelFilter::Debug => Cow::Borrowed("DEBUG"),
             LevelFilter::Trace => Cow::Borrowed("TRACE"),
         }
